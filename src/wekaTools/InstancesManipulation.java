@@ -8,6 +8,18 @@ import weka.filters.unsupervised.attribute.Remove;
 public class InstancesManipulation 
 {
 	/*
+	 * Get attribute subset of Instances
+	 */
+	public static Instances subset( final Instances data, final int[] attributeIndex ) throws Exception
+	{
+		final Remove remove = new Remove();
+		remove.setAttributeIndicesArray( attributeIndex );
+		remove.setInvertSelection( true );
+		remove.setInputFormat( data );
+		return Filter.useFilter( data, remove ); 
+	}
+	
+	/*
 	 * Remove one attribute defined by its index in the data. 
 	 */
 	public static Instances removeAttribute( final Instances inData, final int attributeIndex ) throws Exception 
