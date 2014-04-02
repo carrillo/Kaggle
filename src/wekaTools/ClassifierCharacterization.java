@@ -18,7 +18,8 @@ public class ClassifierCharacterization
 	 */
 	public static Instances getBestAttributeCombination( 
 			final AbstractClassifier classifier, 
-			final Instances data 
+			final Instances data, 
+			final boolean verbose 
 			) throws Exception
 	{
 		//Generate an array holding all indices to shuffle (i.e. all except the class index). 
@@ -40,6 +41,9 @@ public class ClassifierCharacterization
 		ArrayList<EvaluatedAttributeCombination> evalCombinations = new ArrayList<EvaluatedAttributeCombination>(); 
 		for( int i = 0; i < attributeIndex.length; i++ )
 		{			
+			if( verbose )
+				System.out.println( data.numAttributes() + " choose " + (i + 1) + " attributes." ); 
+				
 			evalCombinations.addAll( combineAttributes( classifier, data, attributeIndex, (i+1) ) );
 		}
 		
@@ -73,7 +77,7 @@ public class ClassifierCharacterization
 			subset = getDataSubset( data, combination );  
 			
 			//Run evaluation on subset of data 
-			eval = evaluate( classifier, subset, 10, new Random() ); 
+			eval = evaluate( classifier, subset, 2, new Random() ); 
 			
 			evalList.add( new EvaluatedAttributeCombination( combination, eval) ); 
 		}
@@ -104,10 +108,10 @@ public class ClassifierCharacterization
 	 * Evaluate classification 
 	 */
 	private static Evaluation evaluate( final AbstractClassifier classifier,
-			final Instances data, final int numFolds, final Random random ) throws Exception
+			final Instances data, final int kFolds, final Random random ) throws Exception
 	{
 		final Evaluation eval = new Evaluation( data ); 
-		eval.crossValidateModel( classifier, data, numFolds, random );
+		eval.crossValidateModel( classifier, data, kFolds, random );
 		return eval; 
 	}
 	
