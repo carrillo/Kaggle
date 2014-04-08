@@ -68,16 +68,44 @@ nominal.fractionSurvived  <- data.frame()
 for( i in d.nominal.features ) {
   nominal.fractionSurvived <- rbind( nominal.fractionSurvived, fraction.survived( i, d.nominal ) )
 }
-nominal.fractionSurvived <- nominal.fractionSurvived[ nominal.fractionSurvived$n >= 10, ] 
 
-quartz()
-p <- ggplot( nominal.fractionSurvived, aes( x = factor( value ), y = fractionSurvived  )  )
+#############################
+# Are fractions significantly different from what we expect 
+# Let's model the fraction survived as a bernouli trial of length n=categoryObserved with a probability p=survived.fraction 
+#############################
+getBernouliTrialProb <- function( row ) {
+  size  <- as.numeric( row[ 6 ] )
+  x <- ( as.numeric( row[ 3 ] ) * size )
+  prob <- dbinom( x, size, prob=survived.fraction )
+  return( prob )
+}
+for( i in 1:nrow( nominal.fractionSurvived ) ) {
+  nominal.fractionSurvived$pValue[ i ] <- getBernouliTrialProb( nominal.fractionSurvived[ i, ] )
+}
+nominal.fractionSurvived$pValue <- p.adjust( nominal.fractionSurvived$pValue, method="bonferroni")
+#pValue.nominal  <- pValue.nominal[ order( pValue.nominal$prob ), ]
+
+featuresWithLowPValue <- unique( nominal.fractionSurvived[ nominal.fractionSurvived$pValue < 0.01, ]$feature )
+
+#nominal.fractionSurvived <- nominal.fractionSurvived[ nominal.fractionSurvived$feature %in% featuresWithLowPValue, ] 
+nominal.fractionSurvived.plot <- nominal.fractionSurvived[ nominal.fractionSurvived$n >= 5, ] 
+
+p <- ggplot( nominal.fractionSurvived.plot, aes( x = factor( value ), y = fractionSurvived, width=n/450 )  )
 p <- p + geom_bar( stat = "identity",fill="white", colour="darkgreen" )
-#p <- p + geom_hline( survived.fraction )
+p <- p + geom_hline( aes( yintercept = survived.fraction ),colour="gray50" )
 p <- p + facet_wrap( ~ feature, scale="free",  )
 #p  <- p + scale_x_continuous( limits=c(0,1), name="scaled value" )
 p  <- p + scale_y_continuous( limits=c(0,1), name="fraction survived" )
-show( p )
+
+quartz()
+if( write ) {
+  fileName <- "exploration/nominalFeaturesBarplots.png"
+  png( fileName )
+  show( p )
+  dev.off()  
+} else {
+  show( p )
+}
 
 ###########################
 # NUMERICAL FEATURES
@@ -99,7 +127,7 @@ kolmogorov.test <- function( featureName, d.numeric ) {
   return( test$p.value  )
 }
 
-pValues  <- sapply( d.numeric.features, function ( x ) kolmogorov.test( x, d.numeric ) )
+pValues.numeric  <- sapply( d.numeric.features, function ( x ) kolmogorov.test( x, d.numeric ) )
 
 ###########################
 # Plot data using empirical cumulative distributions
@@ -129,49 +157,3 @@ if( write ) {
 } else {
   show( p )
 }
-
-###########################
-# NOMINAL FEATURES
-# 1. Subset data for nominal features
-# 2. Calculate fraction survived for each class within the nominal features 
-###########################
-d.nominal  <- d[,which( sapply(d, is.factor ) ) ]
-d.nominal.features  <- names( d.nominal )[ which( names( d.nominal ) != "Survived" ) ]
-d.nominal$Survived  <- as.numeric( as.character( d.nominal$Survived ) )
-
-fraction.survived <- function( featureName, d.nominal ) {
-  index  <- which( names( d.nominal ) == featureName ) 
-  df <- data.frame( value=d.nominal[,index], sex=d.nominal$Sex, Survived=d.nominal$Survived )
-  df  <- df[ !is.na( df$value ), ]
-  
-  fraction.survived.perLevel <- function( level ) {
-    df.levelsub <- df[ df$value == level, ]
-    n <- length( df.levelsub$value )
-    survivedMale <- sum( df.levelsub[ df.levelsub$sex == "male", ]$Survived )
-    survivedFemale <- sum( df.levelsub[ df.levelsub$sex == "female", ]$Survived )
-    out  <- data.frame( feature=featureName, value=level, fractionSurvived=mean( df.levelsub$Survived ), fraction.survived.female= survivedFemale/n, fractionSurvived.male = survivedMale/n, n=n )
-    return(  out ) 
-  }
-  
-  out  <- data.frame() 
-  for( i in levels( df$value ) ) {
-    if( i != "?" ) { out <- rbind( out, fraction.survived.perLevel( i ) )  }
-  }
-  return( out )
-}
-
-# Get fraction survival for nominal features, consider only categories with > 10 samples 
-nominal.fractionSurvived  <- data.frame() 
-for( i in d.nominal.features ) {
-  nominal.fractionSurvived <- rbind( nominal.fractionSurvived, fraction.survived( i, d.nominal ) )
-}
-nominal.fractionSurvived <- nominal.fractionSurvived[ nominal.fractionSurvived$n >= 10, ] 
-
-quartz()
-p <- ggplot( nominal.fractionSurvived, aes( x = factor( value ), y = fractionSurvived  )  )
-p <- p + geom_bar( stat = "identity",fill="white", colour="darkgreen" )
-p <- p + facet_wrap( ~ feature, scale="free",  )
-#p  <- p + scale_x_continuous( limits=c(0,1), name="scaled value" )
-p  <- p + scale_y_continuous( limits=c(0,1), name="fraction survived" )
-show( p )
-

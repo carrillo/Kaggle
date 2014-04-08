@@ -16,9 +16,9 @@ public class TitanicFiles
 		Iterable<CSVRecord> records = CSVHelper.readCSV( fileNameIn );
 		PrintWriter out = TextFileAccess.openFileWrite( fileNameOut ); 
 		 
-		String header = "PassengerId,Survived,Pclass,Surname,Title,Sex,Age,SibSp,Parch,TicketId,TicketNr,Fare,CabinCount,CabinDeck,CabinNr,Embarked";
+		String header = "PassengerId,Survived,Pclass,Surname,Title,Sex,Age,SibSp,Parch,TicketId,TicketNr,Fare,CabinCount,CabinDeck,CabinNr,Cabin,Embarked";
 		if( isTestData )
-			header = "PassengerId,Pclass,Surname,Title,Sex,Age,SibSp,Parch,TicketId,TicketNr,Fare,CabinCount,CabinDeck,CabinNr,Embarked";
+			header = "PassengerId,Pclass,Surname,Title,Sex,Age,SibSp,Parch,TicketId,TicketNr,Fare,CabinCount,CabinDeck,CabinNr,Cabin,Embarked";
 		
 		out.println( header ); 
 		
@@ -76,9 +76,10 @@ public class TitanicFiles
 		//Add next attributes as they are 
 		out += stringToWekaEntry( csvRecord.get( 9 + offSet ) ) + ","; 
 		
-		//Add split cabin attribute
+		//Add split cabin attribute and keep original
 		final String[] splitCabin = splitCabin( csvRecord.get( 10 + offSet ) );
-		out += stringToWekaEntry( splitCabin[ 0 ] ) + "," + stringToWekaEntry( splitCabin[ 1 ] ) + "," + stringToWekaEntry( splitCabin[ 2 ] ) + ",";  
+		out += stringToWekaEntry( splitCabin[ 0 ] ) + "," + stringToWekaEntry( splitCabin[ 1 ] ) + "," + stringToWekaEntry( splitCabin[ 2 ] ) + ",";
+		out += stringToWekaEntry( csvRecord.get( 10 + offSet ) ) + ","; 
 		
 		//Add final attribute as it is 
 		out += stringToWekaEntry( csvRecord.get( 11 + offSet ) );  
