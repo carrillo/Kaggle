@@ -23,6 +23,10 @@ d[ d == "?" ] <- NA
 d$Survived  <- as.factor( d$Survived ) # 
 d$Pclass  <- as.factor( d$Pclass )
 d$Age <- as.numeric( as.character( d$Age ) ) 
+d$AgeBinned  <- as.numeric( cut( x=as.numeric( d$Age ), breaks=seq(from=0,to=100,by=20), labels=seq( from=10,to=90,by=20) ) )
+d$AgeYoungOnly  <- d$Age 
+d$AgeYoungOnly[ d$AgeYoungOnly > 20 ]  <- NA 
+
 d$TicketNr <- as.numeric( as.character( d$TicketNr ) ) 
 d$CabinCount <- as.numeric( as.character( d$CabinCount ) ) 
 d$CabinNr <- as.numeric( as.character( d$CabinNr ) ) 
@@ -85,10 +89,12 @@ for( i in 1:nrow( nominal.fractionSurvived ) ) {
 nominal.fractionSurvived$pValue <- p.adjust( nominal.fractionSurvived$pValue, method="bonferroni")
 #pValue.nominal  <- pValue.nominal[ order( pValue.nominal$prob ), ]
 
+#classesWithLowPValue <- nominal.fractionSurvived[ nominal.fractionSurvived$pValue < 0.05, ]
 featuresWithLowPValue <- unique( nominal.fractionSurvived[ nominal.fractionSurvived$pValue < 0.01, ]$feature )
+keep  <- as.character( featuresWithLowPValue )
 
-#nominal.fractionSurvived <- nominal.fractionSurvived[ nominal.fractionSurvived$feature %in% featuresWithLowPValue, ] 
-nominal.fractionSurvived.plot <- nominal.fractionSurvived[ nominal.fractionSurvived$n >= 5, ] 
+nominal.fractionSurvived <- nominal.fractionSurvived[ nominal.fractionSurvived$feature %in% featuresWithLowPValue, ] 
+nominal.fractionSurvived.plot <- nominal.fractionSurvived[ nominal.fractionSurvived$n >= 10, ] 
 
 p <- ggplot( nominal.fractionSurvived.plot, aes( x = factor( value ), y = fractionSurvived, width=n/450 )  )
 p <- p + geom_bar( stat = "identity",fill="white", colour="darkgreen" )
@@ -128,6 +134,7 @@ kolmogorov.test <- function( featureName, d.numeric ) {
 }
 
 pValues.numeric  <- sapply( d.numeric.features, function ( x ) kolmogorov.test( x, d.numeric ) )
+pValues.numeric  <- p.adjust(p=pValues.numeric,method="bonferroni")
 
 ###########################
 # Plot data using empirical cumulative distributions

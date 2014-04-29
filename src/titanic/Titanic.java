@@ -35,9 +35,31 @@ public class Titanic
 	private AbstractClassifier classifier; 
 	private InputMappedClassifier imc; 
 	
-	public Titanic( final String train ) throws Exception 
+	public Titanic( final String trainFileName, final String testFileName ) throws Exception 
 	{
-		train( train ); 
+		//preprocessData( trainFileName, testFileName );
+		train( trainFileName ); 
+	}
+	
+	/*
+	 * Pre-process the training and test data. 
+	 * 
+	 * 1. Load the data. 
+	 * 2. Make nominal features nominal. 
+	 * 3. Keep only useful features identified during data exploration. 
+	 */
+	public void preprocessData( final String trainFileName, final String testFileName ) throws Exception 
+	{
+		// Load training and test data 
+		Instances trainingData = new DataSource( trainFileName ).getDataSet(); 
+		Instances testData = new DataSource( testFileName ).getDataSet();
+				
+		// Make nominal features nominal 
+		final String[] nominalClasses = new String[] {
+				"Survived","Pclass","Surname","Title","Sex","TicketId","CabinDeck","Embarked"
+		};
+		trainingData = InstancesManipulation.makeNominal( trainingData, nominalClasses );
+		testData = InstancesManipulation.makeNominal( testData, nominalClasses );
 	}
 	
 	/**
@@ -59,6 +81,8 @@ public class Titanic
 		
 		
 		InstancesManipulation.setClassAttribute( data, "Survived" );
+		
+		
 		data = InstancesManipulation.removeAttribute(data, "PassengerId" ); 
 		
 		
@@ -185,9 +209,10 @@ public class Titanic
 		
 		
 		//for( int i = 1; i < 11; i++ ) {
-			final String predictOut = "resources/titanic/predict.csv";
-			Titanic tt = new Titanic( trainingSet );
-			tt.test( testSet, predictOut );
+		final String predictOut = "resources/titanic/predict.csv";
+		Titanic tt = new Titanic( trainingSet, testSet );
+			 
+			//tt.test( testSet, predictOut );
 		//}
 		
 		
