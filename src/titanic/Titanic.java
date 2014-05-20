@@ -58,9 +58,9 @@ public class Titanic
 	 * 1. Load the data. 
 	 * 2. Make nominal features nominal.
 	 * 3. Match training and test data (Add missing features and missing labels in nominal features). 
-	 * 3. Define class feature ("Survived") in data.  
-	 * 4. Keep only useful features identified during data exploration. 
-	 * 5. Set Training and Test data instance variables. 
+	 * 4. Define class feature ("Survived") in data.  
+	 * 5. Keep only useful features identified during data exploration. 
+	 * 6. Set Training and Test data instance variables. 
 	 */
 	public void preprocessData( final String trainFileName, final String testFileName ) throws Exception 
 	{
@@ -242,7 +242,9 @@ public class Titanic
 	 * Predict survival. 
 	 * 1. Define input data (training and test data). 
 	 * 2. Define output data (predictions) 
-	 * 3. 
+	 * 3. Load and pre-process data
+	 * 4. Train classifier
+	 * 5. Classify 
 	 */
 	public static void main(String[] args) throws Exception
 	{
