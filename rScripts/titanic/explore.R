@@ -169,9 +169,10 @@ d.numeric.scaled.melt <- d.numeric.scaled.melt[ !is.na( d.numeric.scaled.melt$va
 p <- ggplot( d.numeric.scaled.melt, aes( value, colour = Survived ) )
 p <- p + stat_ecdf() 
 p <- p + facet_wrap(~ variable, ncol=4 )
-p  <- p + scale_x_continuous( limits=c(0,1), name="scaled value" )
+p  <- p + scale_x_continuous( limits=c(0,1), breaks=c(0,1.0), name="scaled value" )
 p  <- p + scale_y_continuous( limits=c(0,1), name="cumulative probability" )
 
+write <- TRUE
 if( write ) {
   fileName <- "exploration/numericFeaturesECDF.png"
   png( fileName )
