@@ -3,18 +3,44 @@ package wekaTools;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
+
+import array.tools.DoubleArrayTools;
 
 import com.sun.tools.javac.util.List;
 
 import weka.core.Attribute;
 import weka.core.Instances;
 import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.ClassAssigner;
+import weka.filters.unsupervised.attribute.Discretize;
 import weka.filters.unsupervised.attribute.Normalize;
 import weka.filters.unsupervised.attribute.NumericToNominal;
 import weka.filters.unsupervised.attribute.Remove;
 
 public class InstancesManipulation 
 {	
+	/**
+	 * Discretizes the class feature. 
+	 * @throws Exception
+	 */
+	public static Instances discretizeClassFeature( Instances in ) throws Exception
+	{
+		final int classIndex = in.classIndex(); 
+		final ClassAssigner classAssigner = new ClassAssigner();
+		classAssigner.setClassIndex( "0" );
+		classAssigner.setInputFormat( in );
+		in = Filter.useFilter( in, classAssigner); 
+		
+		Filter filter = new Discretize( String.valueOf( classIndex ) );
+		filter.setInputFormat( in ); 
+		in = Filter.useFilter( in, filter);
+		
+		classAssigner.setClassIndex( String.valueOf( classIndex ) );
+		classAssigner.setInputFormat( in );
+		return Filter.useFilter( in, classAssigner);
+	}
+	
 	/*
 	 * Get attribute index from attribute names
 	 */
@@ -46,6 +72,7 @@ public class InstancesManipulation
 		return out; 
 	}
 	
+	
 	/*
 	 * Get summary of all features.
 	 */
@@ -61,13 +88,30 @@ public class InstancesManipulation
 	}
 	
 	/*
+	 * Get names of all features.
+	 */
+	public static String[] getFeatureNames( final Instances inData ) 
+	{
+		final Attribute[] features = getFeatures( inData );
+		final String[] out = new String[ features.length ]; 
+		for( int i = 0; i < features.length; i++ )
+		{
+			out[ i ] = features[ i ].name(); 
+		}
+		return out; 
+	}
+	
+	/*
 	 * Returns indices of numeric features. 
 	 */
-	public static ArrayList<Integer> getNumericFeaturesIndices( Instances in )
+	public static ArrayList<Integer> getNumericFeaturesIndices( final Instances in, final boolean excludeClassIndex )
 	{
 		ArrayList<Integer> indices = new ArrayList<Integer>(); 
 		for( int i = 0; i < in.numAttributes(); i++ )
 		{
+			if( i == in.classIndex() && excludeClassIndex )
+				continue; 
+			
 			if( in.attribute( i ).isNumeric() )
 			{
 				indices.add( i ); 
@@ -75,7 +119,46 @@ public class InstancesManipulation
 		}
 		return indices; 
 	}
-
+	
+	/**
+	 * Extracts data of numeric features as double[]. 
+	 * @param in
+	 * @param excludeClassVariable
+	 * @return
+	 */
+	public static ArrayList<double[]> getNumericFeaturesAsDoubleArray( final Instances in, final boolean excludeClassVariable )
+	{
+		final ArrayList<double[]> out = new ArrayList<double[]>(); 
+		
+		final ArrayList<Integer> indices = getNumericFeaturesIndices( in, excludeClassVariable );
+		
+		double[] currentValues; 
+		for( int m = 0; m < in.numInstances(); m++ )
+		{
+			currentValues = new double[ indices.size() ]; 
+			for( int n = 0; n < indices.size(); n++ )
+			{ 
+				currentValues[ n ] = in.get( m ).value( indices.get( n ) ); 
+			}
+			out.add( currentValues ); 
+		}
+		
+		return out; 
+	}
+	
+	public static ArrayList<Double> getNumericClassValue( final Instances in )
+	{
+		final ArrayList<Double> out = new ArrayList<Double>(); 
+		
+		final int classIndex = in.classIndex(); 
+		for( int m = 0; m < in.numInstances(); m++ )
+		{
+			out.add( in.get( m ).value( classIndex ) ); 
+		}
+		
+		return out; 
+	}
+	
 	/*
 	 * Hash String[] 
 	 */
@@ -179,6 +262,27 @@ public class InstancesManipulation
 		remove.setInputFormat( inData ); 
 		Instances outData = Filter.useFilter(inData, remove); 
 		return outData; 
+	}
+	
+	/**
+	 * Adds a squared version of the given feature to the instances. 
+	 */
+	public static void addTransformedFeature( final Instances inData, final String featureToTransform, final MathFunction function )
+	{
+		//Add new feature to data 
+		final String newFeatureName = new String( featureToTransform + "Squared" ); 
+		inData.insertAttributeAt( new Attribute( new String( newFeatureName ) ), inData.numAttributes() );
+		
+		final int vIndex = InstancesManipulation.getFeatureIndex( inData, featureToTransform );
+		final int newIndex = InstancesManipulation.getFeatureIndex( inData, newFeatureName );
+		
+		double currentValue; 
+		for( int i = 0; i < inData.numInstances(); i++ )
+		{
+			currentValue = inData.instance( i ).value(  vIndex );
+			inData.instance( i ).setValue( newIndex, function.run( currentValue ) );
+		}
+		
 	}
 	
 	/*
