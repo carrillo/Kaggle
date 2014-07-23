@@ -1,11 +1,15 @@
 package wekaTools;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
+import array.tools.ArrayListIntegerTools;
 import array.tools.DoubleArrayTools;
+import array.tools.StringArrayTools;
 
 import com.sun.tools.javac.util.List;
 
@@ -21,24 +25,121 @@ import weka.filters.unsupervised.attribute.Remove;
 public class InstancesManipulation 
 {	
 	/**
-	 * Discretizes the class feature. 
+	 * Discretizes numeric features. Specify weather the class feature should be discretized as well.  
 	 * @throws Exception
 	 */
-	public static Instances discretizeClassFeature( Instances in ) throws Exception
-	{
-		final int classIndex = in.classIndex(); 
+	public static Instances discretizeNumericFeatures( Instances in, final boolean discretizeClassIndex ) throws Exception
+	{ 
+		//final int classIndex = in.classIndex();
+		final String className = in.classAttribute().name(); 
+		
 		final ClassAssigner classAssigner = new ClassAssigner();
-		classAssigner.setClassIndex( "0" );
-		classAssigner.setInputFormat( in );
-		in = Filter.useFilter( in, classAssigner); 
+		if( discretizeClassIndex )
+		{			
+			classAssigner.setClassIndex( "0" );
+			classAssigner.setInputFormat( in );
+			in = Filter.useFilter(in, classAssigner); 
+		}
 		
-		Filter filter = new Discretize( String.valueOf( classIndex ) );
+		
+		ArrayList<Integer> numericIndices = InstancesManipulation.getNumericFeaturesIndices( in, false );
+		for( int i = 0; i < numericIndices.size(); i++ )
+		{
+			numericIndices.set( i, numericIndices.get( i ) + 1 ); 
+		} 
+		//System.out.println( Arrays.toString( InstancesManipulation.getFeatureNames( in ) ) ); 
+		
+		Filter filter = new Discretize( ArrayListIntegerTools.arrayListToString(numericIndices, "," ) );
 		filter.setInputFormat( in ); 
-		in = Filter.useFilter( in, filter);
+		in  = Filter.useFilter( in, filter);
 		
-		classAssigner.setClassIndex( String.valueOf( classIndex ) );
-		classAssigner.setInputFormat( in );
-		return Filter.useFilter( in, classAssigner);
+		if( discretizeClassIndex )
+		{
+			setClassAttribute( in, className ); 
+			//classAssigner.setClassIndex( String.valueOf( classIndex ) );
+			//classAssigner.setInputFormat( in );
+			//in = Filter.useFilter( in, classAssigner);
+		}
+		
+		return in; 
+	}
+	
+	/**
+	 * Discretizes numeric features. Specify weather the class feature should be discretized as well.  
+	 * @throws Exception
+	 */
+	public static Instances discretizeNumericFeaturesNew( Instances in, final ArrayList<Integer> indices ) throws Exception
+	{ 
+		final String className = in.classAttribute().name(); 
+		final ClassAssigner classAssigner = new ClassAssigner();
+		final boolean containsClassIndex = containsClassIndex( in, indices ); 
+		if( containsClassIndex )
+		{			
+			//System.out.println( "Contains class Index" ); 
+			classAssigner.setClassIndex( "0" );
+			classAssigner.setInputFormat( in );
+			in = Filter.useFilter(in, classAssigner); 
+		}
+		
+		
+		ArrayList<Integer> indicesForString = new ArrayList<Integer>(); 
+		for( int i = 0; i < indices.size(); i++ )
+		{
+			indicesForString .add( indices.get( i ) + 1 ); 
+		} 
+		 
+		
+		Filter filter = new Discretize( ArrayListIntegerTools.arrayListToString( indicesForString, "," ) );
+		filter.setInputFormat( in ); 
+		in  = Filter.useFilter( in, filter);
+		
+		if( containsClassIndex )
+		{
+			setClassAttribute( in, className ); 
+		}  
+		
+		return in; 
+	}
+	
+	/**
+	 * Returns true if the class index is contained in the index array
+	 * @param in
+	 * @param indices
+	 * @return
+	 */
+	private static boolean containsClassIndex( final Instances in, final ArrayList<Integer> indices )
+	{
+		boolean out =  false; 
+		
+		for( Integer i : indices )
+		{
+			if( i == in.classIndex() )
+			{
+				out = true; 
+				break; 
+			}
+		}
+		
+		return out; 
+	}
+	
+	/**
+	 * Sets all values of given feature with specified value. 
+	 * @param in
+	 * @param indices
+	 * @param value
+	 */
+	public static void fillFeaturesWithValue( Instances in, final ArrayList<Integer> indices, final double value )
+	{
+		for( int m = 0; m < in.numInstances(); m++ )
+		{
+			for( int n = 0; n < indices.size(); n++ )
+			{
+				in.get( m ).setValue( indices.get( n ), value ); 
+			} 
+		}
+		
+		 
 	}
 	
 	/*
@@ -101,7 +202,7 @@ public class InstancesManipulation
 		return out; 
 	}
 	
-	/*
+	/**
 	 * Returns indices of numeric features. 
 	 */
 	public static ArrayList<Integer> getNumericFeaturesIndices( final Instances in, final boolean excludeClassIndex )
@@ -121,6 +222,26 @@ public class InstancesManipulation
 	}
 	
 	/**
+	 * Returns indices of numeric features. 
+	 */
+	public static ArrayList<Integer> getNominalFeaturesIndices( final Instances in, final boolean excludeClassIndex )
+	{
+		ArrayList<Integer> indices = new ArrayList<Integer>(); 
+		for( int i = 0; i < in.numAttributes(); i++ )
+		{
+			if( i == in.classIndex() && excludeClassIndex )
+				continue; 
+			
+			
+			if( in.attribute( i ).isNominal() )
+			{
+				indices.add( i ); 
+			}
+		}
+		return indices; 
+	}
+	
+	/**
 	 * Extracts data of numeric features as double[]. 
 	 * @param in
 	 * @param excludeClassVariable
@@ -129,7 +250,6 @@ public class InstancesManipulation
 	public static ArrayList<double[]> getNumericFeaturesAsDoubleArray( final Instances in, final boolean excludeClassVariable )
 	{
 		final ArrayList<double[]> out = new ArrayList<double[]>(); 
-		
 		final ArrayList<Integer> indices = getNumericFeaturesIndices( in, excludeClassVariable );
 		
 		double[] currentValues; 
@@ -146,6 +266,39 @@ public class InstancesManipulation
 		return out; 
 	}
 	
+	/**
+	 * Extracts data of nominal features as double[]. 
+	 * @param in
+	 * @param excludeClassVariable
+	 * @return
+	 */
+	public static ArrayList<double[]> getNominalFeaturesAsDoubleArray( final Instances in, final boolean excludeClassVariable )
+	{
+		//final ArrayList<double[]> out = new ArrayList<double[]>(); 
+		
+		final ArrayList<Integer> indices = getNominalFeaturesIndices( in, excludeClassVariable );
+		return getValues( in, indices ); 
+		/*
+		double[] currentValues; 
+		for( int m = 0; m < in.numInstances(); m++ )
+		{
+			currentValues = new double[ indices.size() ]; 
+			for( int n = 0; n < indices.size(); n++ )
+			{ 
+				currentValues[ n ] = in.get( m ).value( indices.get( n ) ); 
+			}
+			out.add( currentValues ); 
+		}
+		
+		return out; 
+		*/
+	}
+	
+	/**
+	 * Get numeric values for class feature. 
+	 * @param in
+	 * @return
+	 */
 	public static ArrayList<Double> getNumericClassValue( final Instances in )
 	{
 		final ArrayList<Double> out = new ArrayList<Double>(); 
@@ -154,6 +307,55 @@ public class InstancesManipulation
 		for( int m = 0; m < in.numInstances(); m++ )
 		{
 			out.add( in.get( m ).value( classIndex ) ); 
+		}
+		
+		return out; 
+	}
+	
+	/**
+	 * Returns the double value of the features specified by indices. 
+	 * If features are not numerical, the internal double representation of the value will be returned. Use getValueStrings if 
+	 * nominal values are to be returned. 
+	 * @param in
+	 * @param indices
+	 * @return
+	 */
+	public static ArrayList<double[]> getValues( final Instances in, final ArrayList<Integer> indices )
+	{
+		final ArrayList<double[]> out = new ArrayList<double[]>(); 
+		double[] currentValues; 
+		for( int m = 0; m < in.numInstances(); m++ )
+		{
+			currentValues = new double[ indices.size() ]; 
+			for( int n = 0; n < indices.size(); n++ )
+			{ 
+				currentValues[ n ] = in.get( m ).value( indices.get( n ) ); 
+			}
+			out.add( currentValues ); 
+		}
+		
+		return out; 
+	}
+	
+	/**
+	 * Returns the string value of the features specified by indices. 
+	 *  
+	 * @param in
+	 * @param indices
+	 * @return
+	 */
+	public static ArrayList<String[]> getStringValues( final Instances in, final ArrayList<Integer> indices )
+	{
+		final ArrayList<String[]> out = new ArrayList<String[]>(); 
+		String[] currentValues; 
+		for( int m = 0; m < in.numInstances(); m++ )
+		{
+			currentValues = new String[ indices.size() ]; 
+			for( int n = 0; n < indices.size(); n++ )
+			{ 
+				currentValues[ n ] = in.get( m ).stringValue( indices.get( n ) ); 
+			}
+			out.add( currentValues ); 
 		}
 		
 		return out; 
@@ -263,27 +465,18 @@ public class InstancesManipulation
 		Instances outData = Filter.useFilter(inData, remove); 
 		return outData; 
 	}
-	
-	/**
-	 * Adds a squared version of the given feature to the instances. 
+	/*
+	 * Remove attributes defined by the index array. 
 	 */
-	public static void addTransformedFeature( final Instances inData, final String featureToTransform, final MathFunction function )
+	public static Instances removeAttribute( final Instances inData, final ArrayList<Integer> featureIndexArray ) throws Exception
 	{
-		//Add new feature to data 
-		final String newFeatureName = new String( featureToTransform + "Squared" ); 
-		inData.insertAttributeAt( new Attribute( new String( newFeatureName ) ), inData.numAttributes() );
-		
-		final int vIndex = InstancesManipulation.getFeatureIndex( inData, featureToTransform );
-		final int newIndex = InstancesManipulation.getFeatureIndex( inData, newFeatureName );
-		
-		double currentValue; 
-		for( int i = 0; i < inData.numInstances(); i++ )
-		{
-			currentValue = inData.instance( i ).value(  vIndex );
-			inData.instance( i ).setValue( newIndex, function.run( currentValue ) );
-		}
-		
+		Remove remove = new Remove(); 							// remove filter
+		remove.setAttributeIndicesArray( ArrayListIntegerTools.toArray( featureIndexArray ) );
+		remove.setInputFormat( inData ); 
+		Instances outData = Filter.useFilter(inData, remove); 
+		return outData; 
 	}
+	
 	
 	/*
 	 * Set class attribute using attribute name 

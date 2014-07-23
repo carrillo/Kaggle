@@ -30,6 +30,17 @@ public class NormalizeNumericFeatures extends SimpleBatchFilter
 		
 	}
 	
+	private double min = 0; 
+	private double max = 1; 
+	
+	public NormalizeNumericFeatures( final double min, final double max )
+	{
+		this.min = min; 
+		this.max = max; 
+	}
+	
+	public NormalizeNumericFeatures() {}
+	
 	/*
 	 * Set up the input format
 	 * 
@@ -149,7 +160,7 @@ public class NormalizeNumericFeatures extends SimpleBatchFilter
 		}
 		else 
 		{
-			out = ( value - minMax[ 0 ] ) / ( minMax[ 1 ] - minMax[ 0 ] );    
+			out = ( ( ( this.max - this.min ) * ( value - minMax[ 0 ] ) ) / ( minMax[ 1 ] - minMax[ 0 ] ) ) + this.min;    
 		}
 		return out; 
 	}

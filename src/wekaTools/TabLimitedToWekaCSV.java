@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import array.tools.StringArrayTools;
 
@@ -46,12 +47,15 @@ public class TabLimitedToWekaCSV
 	}
 	
 	
+	
 	public static void main(String[] args) throws IOException
 	{
-		final File in = new File( "/Volumes/passport/alternativeSplicingData/k562/features/joinedFeatures/K562_CellPap_geneArchitecture_openChromatin_noPminZero_noNAs.txt" );
+		final File in = new File( "/Volumes/passport/alternativeSplicingData/k562/features/joinedFeatures/K562_CellPap_noPminZero_noNAs_mean.txt" );
 		final String sep = new String( "\t" ); 
-		final File out = new File( "/Volumes/passport/alternativeSplicingData/k562/features/joinedFeatures/K562_CellPap_geneArchitecture_openChromatin_noPminZero_noNAs.csv" );
+		final File out = new File( "/Volumes/passport/alternativeSplicingData/k562/features/joinedFeatures/K562_CellPap_noPminZero_noNAs_mean.csv" );
 		final String missingValueString = new String( "NA" ); 
+		
+		 
 		
 		TabLimitedToWekaCSV tabToCsv = new TabLimitedToWekaCSV( in, out, sep, missingValueString );
 		tabToCsv.run(); 

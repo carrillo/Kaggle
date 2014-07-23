@@ -8,4 +8,9 @@ public class SquareFunction extends MathFunction {
 		return Math.pow( Double.valueOf( x ), 2 );
 	}
 
+	@Override
+	public String description() {
+		return "squared";
+	}
+
 }
