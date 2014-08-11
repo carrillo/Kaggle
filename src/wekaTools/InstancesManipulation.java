@@ -20,6 +20,7 @@ import weka.filters.unsupervised.attribute.ClassAssigner;
 import weka.filters.unsupervised.attribute.Discretize;
 import weka.filters.unsupervised.attribute.Normalize;
 import weka.filters.unsupervised.attribute.NumericToNominal;
+import weka.filters.unsupervised.attribute.RandomSubset;
 import weka.filters.unsupervised.attribute.Remove;
 
 public class InstancesManipulation 
@@ -498,4 +499,6 @@ public class InstancesManipulation
 		remove.setInputFormat( data );
 		return Filter.useFilter( data, remove ); 
 	}
+	
+	
 }

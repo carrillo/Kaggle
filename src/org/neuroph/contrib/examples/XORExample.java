@@ -1,0 +1,56 @@
+package org.neuroph.contrib.examples;
+
+import neurophTools.SimpleLearningEventListener;
+
+import org.neuroph.core.data.DataSet;
+import org.neuroph.core.data.DataSetRow;
+import org.neuroph.nnet.MultiLayerPerceptron;
+import org.neuroph.nnet.learning.ResilientPropagation;
+import org.neuroph.util.TransferFunctionType;
+import org.neuroph.util.benchmark.MyBenchmarkTask;
+/**
+ * Approximate XOR gate using a multilayer percepton with 2 inputs, 3 hidden neurons and 1 output. 
+ * 
+ * The example is adapted from http://neuroph.sourceforge.net/tutorials/MultiLayerPerceptron.html
+ * 
+ * @author fernando carrillo fernando@carrillo.at 
+ *
+ */
+public class XORExample 
+{
+	/**
+	 * Training data with two input neurons. 
+	 * Truth: 
+	 * 0,0: 0
+	 * 0,1: 1
+	 * 1,0: 1 
+	 * 1,1: 0 
+	 */
+	public static DataSet getTrainingData() {
+		DataSet data = new DataSet(2, 1);
+		
+		data.addRow(new DataSetRow(new double[]{0, 0}, new double[]{0}));
+		data.addRow(new DataSetRow(new double[]{0, 1}, new double[]{1}));
+		data.addRow(new DataSetRow(new double[]{1, 0}, new double[]{1}));
+		data.addRow(new DataSetRow(new double[]{1, 1}, new double[]{0}));
+		
+		return data; 
+	}
+	
+	/**
+	 * Returns multilayer percepton learned to approximate the XOR gate. 
+	 * @return
+	 */
+	public static MultiLayerPerceptron getNetwork( final boolean verbose ) {
+		
+		MultiLayerPerceptron mlPerceptron = new MultiLayerPerceptron(TransferFunctionType.TANH, 2, 3, 1);
+		
+		if( verbose ) {			
+			mlPerceptron.getLearningRule().addListener( new SimpleLearningEventListener() );
+		}
+		
+		mlPerceptron.learn( getTrainingData() );
+		
+		return mlPerceptron; 
+	}
+}

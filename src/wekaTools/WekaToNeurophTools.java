@@ -33,6 +33,24 @@ public class WekaToNeurophTools {
 		return out; 
 	}
 	
+	/**
+	 * Returns the labels of the numeric input features. 
+	 * @param instances
+	 * @return
+	 */
+	public static ArrayList<String> getNumericInputLabels( final Instances instances )
+	{
+		final ArrayList<String> out = new ArrayList<String>(); 
+		final ArrayList<Integer> indices = InstancesManipulation.getNumericFeaturesIndices( instances, true );
+		
+		for( Integer index : indices )
+		{
+			out.add( instances.attribute( index ).name() ); 
+		}
+		
+		return out;
+	}
+	
 	public static ArrayList<double[]> getNominalOutput( final Instances instances ) throws Exception
 	{
 		 
@@ -77,7 +95,7 @@ public class WekaToNeurophTools {
 	{
 		final Attribute classFeature = instances.classAttribute();
 		final int classIndex = instances.classIndex(); 
-		System.out.println( "Class index " + classIndex + " name: " + instances.classAttribute().name() ); 
+		//System.out.println( "Class index " + classIndex + " name: " + instances.classAttribute().name() ); 
 		
 		ArrayList<double[]> out = new ArrayList<double[]>(); 
 		if( classFeature.isNumeric() )
@@ -103,6 +121,38 @@ public class WekaToNeurophTools {
 		}
 		
 		return out; 
+	}
+	
+	/**
+	 * Return labels of output variable. 
+	 * @param instances
+	 * @return
+	 */
+	public static ArrayList<String> getOutputLabels( final Instances instances ) throws Exception
+	{
+		final Attribute classFeature = instances.classAttribute();
+		final int classIndex = instances.classIndex();  
+		
+		ArrayList<String> out = new ArrayList<String>(); 
+		if( classFeature.isNumeric() )
+		{
+			out.add( classFeature.name() ); 
+		}
+		else if( classFeature.isNominal() )
+		{
+			int attributeCountBefore = instances.numAttributes() - 1; 
+			final Instances expandedInstances = AttributeTransformation.expandNominalFeature( instances, classIndex );
+			 
+			while( attributeCountBefore < expandedInstances.numAttributes() )
+			{
+				out.add( expandedInstances.attribute( attributeCountBefore ).name() ); 
+				
+				attributeCountBefore++; 
+			}
+			
+		}
+		
+		return out;
 	}
 	
 	

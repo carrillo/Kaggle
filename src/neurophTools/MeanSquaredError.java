@@ -2,6 +2,13 @@ package neurophTools;
 
 public class MeanSquaredError extends DistanceMeasure {
 
+	/**
+	 * Calcluate the mean squared error. 
+	 * 
+	 * for vectors v1 and v2 of length I calculate 
+	 * 
+	 * MSE = 1/I * Sum[ ( v1_i - v2_i )^2 ]
+	 */
 	@Override
 	public double distance(double[] vector1, double[] vector2) {
 		if( vector1.length == vector2.length )
@@ -24,8 +31,8 @@ public class MeanSquaredError extends DistanceMeasure {
 	
 	public static void main(String[] args) 
 	{
-		final double[] v1 = new double[]{ 0.02 }; 
-		final double[] v2 = new double[]{ 0.01 }; 
+		final double[] v1 = new double[]{ 0.02, 0.1 }; 
+		final double[] v2 = new double[]{ 0.01, 0.1 }; 
 
 		
 		MeanSquaredError error = new MeanSquaredError();

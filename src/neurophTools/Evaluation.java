@@ -46,9 +46,7 @@ public class Evaluation
 			//Get predicted output
 			getNeuralNetwork().setInput( data.getRowAt( m ).getInput() );
 			getNeuralNetwork().calculate();
-			predicted = getNeuralNetwork().getOutput();
-			
-			//System.out.println( "desired: " + Arrays.toString( observed ) + "\t" + "predicted: " + Arrays.toString( predicted ) ); 
+			predicted = getNeuralNetwork().getOutput(); 
 			
 			//Calculate distance between observed and predicted 
 			distance[ m ] = getDistanceMeasure().distance( observed, predicted ); 
