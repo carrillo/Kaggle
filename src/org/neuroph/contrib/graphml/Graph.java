@@ -45,18 +45,20 @@ public class Graph extends XMLElement
 	 * @param neuron
 	 */
 	private void addEdges( final Neuron neuron ) {
-		final String source = neuron.getLabel(); 
+		final String source = neuron.getLabel();
+		
 		String target; 
 		String weight; 
+		String weightKeyId = "d1"; 
 		
 		for( Connection con : neuron.getOutConnections() ) {
 			target = con.getToNeuron().getLabel();
 			weight = String.valueOf( con.getWeight() ); 
 			
-			Edge edge = new Edge( source, target, weight ); 
-			edge.appendChild( new Data( "d1", weight ) );
+			//Edge edge = new Edge( source, target, weightKeyId, weight ); 
+			//edge.appendChild( new Data( "d1", weight ) );
 			
-			appendChild( edge );
+			appendChild( new Edge( source, target, weightKeyId, weight ) );
 		}
 	}
 	

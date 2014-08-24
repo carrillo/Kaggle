@@ -2,6 +2,8 @@ package org.neuroph.contrib.graphml;
 /**
  * XML Element representing a graph node. 
  * 
+ * A Node is characterized by a single Id Attribute. 
+ * 
  * @author fernando carrillo (fernando@carrillo.at)
  *
  */

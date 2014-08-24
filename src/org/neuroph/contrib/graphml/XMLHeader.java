@@ -1,5 +1,13 @@
 package org.neuroph.contrib.graphml;
 
+/**
+ * XML header, specifying the XML version and character encoding standard. 
+ * 
+ * Here XML version is set to 1.0 and encoding to UTF-8. 
+ * 
+ * @author fernando carrillo (fernando@carrillo.at)
+ *
+ */
 public class XMLHeader 
 {
 	public static String getHeader() { 

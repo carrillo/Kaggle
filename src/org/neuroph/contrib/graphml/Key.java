@@ -1,5 +1,11 @@
 package org.neuroph.contrib.graphml;
 
+/**
+ * XML Schema key element. 
+ * 
+ * @author fernando carrillo (fernando@carrillo.at)
+ *
+ */
 public class Key extends XMLElement 
 {
 	public Key( final String idValue, final String forValue, 
@@ -12,8 +18,4 @@ public class Key extends XMLElement
 	}
 	
 	public String getTag() { return "key"; }
-	
-	public static void main(String[] args) {
-		System.out.println( new Key( "d0", "edge", "weight", "double" ) ); 
-	}
 }

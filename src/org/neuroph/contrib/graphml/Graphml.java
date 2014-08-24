@@ -24,7 +24,4 @@ public class Graphml extends XMLElement {
 	
 	@Override
 	public String getTag() { return "graphml"; }
-	
-	
-
 }

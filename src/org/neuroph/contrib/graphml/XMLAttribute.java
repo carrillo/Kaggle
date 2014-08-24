@@ -1,5 +1,11 @@
 package org.neuroph.contrib.graphml;
 
+/**
+ * XML Attribute. Contains id value pairs to characterize XML elements. 
+ * 
+ * @author fernando carrillo (fernando@carrillo.at)
+ *
+ */
 public class XMLAttribute 
 {
 	private String id; 
