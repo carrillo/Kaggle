@@ -1,6 +1,5 @@
 package org.neuroph.contrib.graphml;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -11,6 +10,16 @@ import org.neuroph.core.Neuron;
 import org.neuroph.nnet.comp.neuron.BiasNeuron;
 import org.neuroph.nnet.comp.neuron.InputNeuron;
 
+/**
+ * The main class to export neural networks to graphml class. 
+ * To export: 
+ * 
+ *  1. Initiate class with Neural network. 
+ *  2. Parse neural network to graphml representation 
+ *  3. Print to file/STDOUT 
+ * 
+ * @author fernando carrillo (fernando@carrillo.at)
+ */
 public class GraphmlExport 
 {
 	private NeuralNetwork ann;
@@ -31,10 +40,32 @@ public class GraphmlExport
 	
 	
 	/**
+	 * Writes graphml object to specified file. 
+	 * @param filePathOut
+	 */
+	public void writeToFile( final String filePathOut ) {
+		
+		try {
+			File file = new File( filePathOut );
+			file.createNewFile();
+			print( new PrintStream( file ) );
+		} catch (Exception e) {
+			e.printStackTrace(); 
+		}
+	}
+	
+	/**
+	 * Prints graphml object to STDOUT
+	 */
+	public void printToStdout() {
+		print( System.out );
+	}
+	
+	/**
 	 * Print graphml representation to PrintStream
 	 * @param out
 	 */
-	public void print( final PrintStream out ) { 
+	private void print( final PrintStream out ) { 
 		out.println( XMLHeader.getHeader() );
 		out.println( graphml ); 
 	}
@@ -104,11 +135,7 @@ public class GraphmlExport
 	{
 		GraphmlExport ge = new GraphmlExport( XORExample.getNetwork( false ) );
 		ge.parse(); 
-		
-		File file = new File("/Users/carrillo/Desktop/temp/test.graphml"); 
-		file.createNewFile(); 
-		
-		ge.print( new PrintStream( file ) );
+		ge.printToStdout(); 
 	}
 
 }

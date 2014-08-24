@@ -1,5 +1,11 @@
 package org.neuroph.contrib.graphml;
 
+/**
+ * 
+ * Holds the data in a key and attribute pair.  
+ * 
+ * @author fernando carrillo (fernando@carrillo.at)
+ */
 public class Data extends XMLElement {
 
 	public Data( final String key, final String value ) {
