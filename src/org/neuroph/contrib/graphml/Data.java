@@ -2,14 +2,20 @@ package org.neuroph.contrib.graphml;
 
 /**
  * 
- * Holds the data in a key and attribute pair.  
+ * XML Data. 
+ * 
+ * Holds two attributes:
+ *  
+ * 1. The id of the key this data is referring to. 
+ * 2. The value for the referrenced attribute.  
+ *    
  * 
  * @author fernando carrillo (fernando@carrillo.at)
  */
 public class Data extends XMLElement {
 
-	public Data( final String key, final String value ) {
-		addAttribute( new XMLAttribute( "key", key) );
+	public Data( final String keyId, final String value ) {
+		addAttribute( new XMLAttribute( "key", keyId) );
 		addAttribute( new XMLAttribute( "value", value ) );
 	}
 	

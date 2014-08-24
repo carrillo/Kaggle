@@ -3,10 +3,12 @@ package org.neuroph.contrib.graphml;
 /**
  * XML edge element.  
  * 
- * The edge element is characterized by two XML Elements:  
+ * The edge element is characterized by two XML Elements  
  * 
  * 1. The source node id
  * 2. The target node id 
+ * 
+ * And a data field holding the weight of the edge. 
  * 
  * @author fernando carrillo (fernando@carrillo.at)
  *

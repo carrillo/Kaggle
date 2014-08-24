@@ -7,6 +7,12 @@ import org.neuroph.core.Neuron;
 /**
  * The parent XML element holding nodes and edges of a (sub)graph.  
  * 
+ * Characterized by two attributes: 
+ * 1. The Id of the graph. 
+ * 2. The edgetype. For neural network representation directed is chosen. 
+ * 
+ * Contains all edges and nodes of the network as child elements. 
+ * 
  * @author fernando carrillo (fernando@carrillo.at)
  *
  */
@@ -54,9 +60,6 @@ public class Graph extends XMLElement
 		for( Connection con : neuron.getOutConnections() ) {
 			target = con.getToNeuron().getLabel();
 			weight = String.valueOf( con.getWeight() ); 
-			
-			//Edge edge = new Edge( source, target, weightKeyId, weight ); 
-			//edge.appendChild( new Data( "d1", weight ) );
 			
 			appendChild( new Edge( source, target, weightKeyId, weight ) );
 		}

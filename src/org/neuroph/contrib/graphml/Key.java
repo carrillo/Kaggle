@@ -1,7 +1,14 @@
 package org.neuroph.contrib.graphml;
 
 /**
- * XML Schema key element. 
+ * XML Schema key element.
+ * 
+ *  Holds 4 XML elements: 
+ *  
+ *  1. The id value for this key (referred to in data fields). 
+ *  2. The for value, specifying for which XML element this key is valid
+ *  3. The name of the attribute this key referes to. 
+ *  4. The data type.   
  * 
  * @author fernando carrillo (fernando@carrillo.at)
  *

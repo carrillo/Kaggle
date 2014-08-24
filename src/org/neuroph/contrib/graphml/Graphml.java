@@ -2,8 +2,11 @@ package org.neuroph.contrib.graphml;
 
 /**
  * The parent XML element for a graphml document. 
+ * 
  * Holds header containing namespace and schema links. 
- * Holds key definitions. 
+ * 
+ * Holds key definitions.
+ * 
  * 
  * @author fernando carrillo (fernando@carrillo.at)
  *
