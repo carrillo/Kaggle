@@ -3,7 +3,6 @@
 .project
 .DS_Store
 bin/
-rScripts/AfSIS
 /src/afSIS
 /resources
 /submissions
