@@ -2,4 +2,12 @@
 .classpathBackup
 .project
 .DS_Store
-/bin
+bin/
+rScripts/AfSIS
+/src/afSIS
+/resources
+/submissions
+/scikitLearn
+scikitLearnRandomForest
+ignore/
+output/

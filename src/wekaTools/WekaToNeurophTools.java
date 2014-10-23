@@ -33,6 +33,7 @@ public class WekaToNeurophTools {
 		return out; 
 	}
 	
+	
 	/**
 	 * Returns the labels of the numeric input features. 
 	 * @param instances
@@ -44,9 +45,9 @@ public class WekaToNeurophTools {
 		final ArrayList<Integer> indices = InstancesManipulation.getNumericFeaturesIndices( instances, true );
 		
 		for( Integer index : indices )
-		{
+		{ 
 			out.add( instances.attribute( index ).name() ); 
-		}
+		} 
 		
 		return out;
 	}

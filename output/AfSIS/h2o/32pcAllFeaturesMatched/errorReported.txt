@@ -1,0 +1,3 @@
+Cross-validated MSEs so far: 0.0636523 0.4183223 0.1210493 0.06723972 0.1276143
+Cross-validated RMSEs so far: 0.2522941 0.6467784 0.3479215 0.2593062 0.3572315
+Cross-validated CMRMSE so far: 0.3727063

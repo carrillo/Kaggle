@@ -18,6 +18,18 @@ public class DataSetTools
 		}
 		return trainingSet; 
 	}
+	
+	public static DataSet getTestSet( final ArrayList<double[]> inputValues ) {
+		
+		DataSet testSet = new DataSet( inputValues.get( 0 ).length );  
+		
+		for( int i = 0; i < inputValues.size(); i++ )
+		{  
+			testSet.addRow( new DataSetRow( inputValues.get( i ) ) ); 
+		}
+		
+		return testSet; 
+	}
 
 
 }
