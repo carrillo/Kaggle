@@ -28,6 +28,8 @@ spectrum.plot <- function( Y, rowIndex, title=NA ) {
   }
   
   p <- p + geom_line()
+  p <- p + scale_x_continuous("Wavenumber (1/cm)")
+  p <- p + scale_y_continuous("Intensity")
   p <- p + theme(legend.justification=c(1,1), legend.position=c(1,1))
   
   return( p )

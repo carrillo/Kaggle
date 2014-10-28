@@ -141,6 +141,9 @@ feature.collect$max <- apply( combined.spectra.linLog.decayCorrect, MARGIN=1, ma
 feature.collect$min <- apply( combined.spectra.linLog.decayCorrect, MARGIN=1, min )
 feature.collect$range <- feature.collect$max - feature.collect$min
 
+quartz()
+show( spectrum.plot( combined.spectra, c(1:10) ) )
+
 ggsave( spectrum.plot( combined.spectra, c(1:10) ), filename="~/Projects/Homepage/content/kaggleAfricanSoil/plots/raw.png", width=7, height=7)
 ggsave( spectrum.plot( combined.spectra.linLog.decayCorrect, c(1:10) ), filename="~/Projects/Homepage/content/kaggleAfricanSoil/plots/decaySubtracted.png", width=7, height=7)
 
@@ -153,6 +156,8 @@ dev.off()
 # Reduce dimensionality by PCA 
 ################################
 pcBoth <- prcomp(  mergeOnRowNames(x=combined.spectra.linLog.decayCorrect,y=feature.collect)  )
+ggsave( pc.plotExplainedVariation( pcBoth, maxPC=20 ), filename="~/Projects/Homepage/content/kaggleAfricanSoil/plots/pc.png", width=7, height=7)
+
 writeTestAndTrainToFileFromMergedFeatures( combinedFeatures=data.frame( pcBoth$x ), train.output=train.output, 
                                            id="DecaySubtractedPrincipalComponents", train.rowNames=rownames( train.spectra ), test.rowNames=rownames( test.spectra ) )
 
