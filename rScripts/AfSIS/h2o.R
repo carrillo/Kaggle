@@ -11,17 +11,17 @@ require( h2o )
 remoteH2O <- h2o.init(ip = '172.29.13.214', port = 54321, max_mem_size = '60g')
 
 # Load training and test data. 
-trainSet <- h2o.importFile(remoteH2O, "/home/carrillo/h2o/data/trainingInitialData1024PcFromAllFeatures.csv")
-testSet <- h2o.importFile(remoteH2O, "/home/carrillo/h2o/data/testInitialData1024PcFromAllFeatures.csv")
+trainSet <- h2o.importFile(remoteH2O, "/home/carrillo/h2o/data/trainingDecaySubtractedAllPc_matchedWithTestSet.csv")
+testSet <- h2o.importFile(remoteH2O, "/home/carrillo/h2o/data/testDecaySubtractedAllPc.csv")
 
 ensemble_size <- 20
 n_fold = 20
 
 # Loop through increasing number of principal components used. 
-for( pc_count in 2^( seq(9,9,1) ) ) {
+for( pc_count in 2^( seq(1,9,1) ) ) {
   
   # Create working directories 
-  dir <- paste( c("/Users/carrillo/workspace/Kaggle/output/AfSIS/h2o/initialData//",pc_count,"PC/"), collapse="" )
+  dir <- paste( c("/Users/carrillo/workspace/Kaggle/output/AfSIS/h2o/decaySubtractedMatched/",pc_count,"PC/"), collapse="" )
   dir.create( dir )
   setwd( dir )
   
