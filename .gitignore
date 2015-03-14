@@ -5,7 +5,5 @@
 bin/
 /resources
 /submissions
-/scikitLearn
-scikitLearnRandomForest
 ignore/
 output/
