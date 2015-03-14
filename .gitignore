@@ -3,7 +3,6 @@
 .project
 .DS_Store
 bin/
-/src/afSIS
 /resources
 /submissions
 /scikitLearn
