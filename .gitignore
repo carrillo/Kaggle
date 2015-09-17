@@ -2,8 +2,11 @@
 .classpathBackup
 .project
 .DS_Store
+.idea
 bin/
 /resources
 /submissions
 ignore/
 output/
+input/
+.ipynb_checkpoints/
